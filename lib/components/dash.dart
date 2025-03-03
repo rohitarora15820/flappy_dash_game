@@ -14,11 +14,11 @@ class Dash extends PositionComponent {
 
   late Sprite _sprite;
 
-  final Vector2 _gravity =Vector2(0,900.0);
+  final Vector2 _gravity =Vector2(0,1400.0);
 
   Vector2 velocity= Vector2(0,0);
 
-  final _jumpForce=Vector2(0,-450);
+  final _jumpForce=Vector2(0,-500);
 
 
   void jump(){

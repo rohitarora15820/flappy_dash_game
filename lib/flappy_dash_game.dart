@@ -1,66 +1,27 @@
-import 'dart:async';
+import 'dart:math';
 
-import 'dart:ui';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-
 import 'package:flappy_dash/components/dash.dart';
 import 'package:flappy_dash/components/parallax_background.dart';
+import 'package:flappy_dash/components/pipe_pair.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+
+
 class FlappyDashGame extends FlameGame<FlappyDashWorld> with KeyboardEvents {
   FlappyDashGame()
-    : super(
-        world: FlappyDashWorld(),
-        camera: CameraComponent.withFixedResolution(width: 600, height: 1000),
-      );
+      : super(
+          world: FlappyDashWorld(),
+          camera: CameraComponent.withFixedResolution(
+            width: 600,
+            height: 1000,
+          ),
+        );
 
   @override
-  void onGameResize(Vector2 size) {
-    // TODO: implement onGameResize
-    super.onGameResize(size);
-
-    print("onGame Resize: $size");
-  }
-
-  @override
-  Future<void> onLoad() async {
-    super.onLoad();
-
-    // Load Asset
-
-    print("OnLoad");
-  }
-
-  @override
-  void onMount() {
-    // TODO: implement onMount
-    super.onMount();
-  }
-
-  @override
-  void update(double dt) {
-    super.update(dt);
-
-    print("onUpdate $dt");
-  }
-
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-
-    print("onRender");
-  }
-
-  @override
-  void onRemove() {
-    // TODO: implement onRemove
-    super.onRemove();
-  }
-
-    @override
   KeyEventResult onKeyEvent(
     KeyEvent event,
     Set<LogicalKeyboardKey> keysPressed,
@@ -70,42 +31,68 @@ class FlappyDashGame extends FlameGame<FlappyDashWorld> with KeyboardEvents {
     final isSpace = keysPressed.contains(LogicalKeyboardKey.space);
 
     if (isSpace && isKeyDown) {
-      world.onSpacePressed();
+      world.onSpaceDown();
       return KeyEventResult.handled;
     }
     return KeyEventResult.ignored;
   }
 }
 
-class FlappyDashWorld extends World with TapCallbacks {
+class FlappyDashWorld extends World with TapCallbacks, HasGameRef<FlappyDashGame> {
+  late Dash _dash;
+  late PipePair _lastPipe;
+  static const _pipesDistance = 400.0;
 
- late Dash _dash;
   @override
   void onLoad() {
-    // TODO: implement onLoad
     super.onLoad();
     add(DashParallaxBackground());
-    add(_dash=Dash());
-   
-    
+    add(_dash = Dash());
+    _generatePipes(
+      fromX: 350,
+    );
+  }
+
+  void _generatePipes({
+    int count = 5,
+    double fromX = 0.0,
+  }) {
+    for (int i = 0; i < count; i++) {
+      const area = 600;
+      final y = (Random().nextDouble() * area) - (area / 2);
+      add(_lastPipe = PipePair(
+        position: Vector2(fromX + (i * _pipesDistance), y),
+      ));
+    }
+  }
+
+  void _removePipes() {
+    final pipes = children.whereType<PipePair>();
+    final shouldBeRemoved = max(pipes.length - 5, 0);
+    pipes.take(shouldBeRemoved).forEach((pipe) {
+      pipe.removeFromParent();
+    });
   }
 
   @override
   void onTapDown(TapDownEvent event) {
-    // TODO: implement onTapDown
     super.onTapDown(event);
-// call jump event
-_dash.jump();
-
-  }
-
-  onSpacePressed(){
     _dash.jump();
   }
 
+  void onSpaceDown() {
+    _dash.jump();
+  }
 
+  @override
+  void update(double dt) {
+    super.update(dt);
+    if (_dash.x >= _lastPipe.x) {
+      _generatePipes(
+        fromX: _pipesDistance,
+      );
+      _removePipes();
+    }
+    game.camera.viewfinder.zoom = 0.4;
+  }
 }
-
-
-
-
