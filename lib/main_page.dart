@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
       game: _flappyDashGame,
       backgroundBuilder: (context) {
         return Container(
-          color: Colors.grey,
+          // color: Colors.grey,
         );
       },
     );
