@@ -4,11 +4,13 @@ import 'dart:ui';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/palette.dart';
+import 'package:flame_bloc/flame_bloc.dart';
+import 'package:flappy_dash/bloc/game/game_cubit.dart';
 import 'package:flappy_dash/components/hidden_coin.dart';
 import 'package:flappy_dash/components/pipe.dart';
 import 'package:flappy_dash/flappy_dash_game.dart';
 
-class Dash extends PositionComponent with CollisionCallbacks,HasGameRef<FlappyDashGame>  {
+class Dash extends PositionComponent with CollisionCallbacks,HasGameRef<FlappyDashGame>,FlameBlocReader<GameCubit,GameState> {
   Dash()
     : super(
         position: Vector2(0, 0),
@@ -27,6 +29,9 @@ class Dash extends PositionComponent with CollisionCallbacks,HasGameRef<FlappyDa
 
 
   void jump(){
+    if(bloc.state.currentPlayingState != PlayingState.playing){
+       return;
+    }
     velocity = _jumpForce;
   }
 
@@ -51,7 +56,9 @@ class Dash extends PositionComponent with CollisionCallbacks,HasGameRef<FlappyDa
   void update(double dt) {
     // TODO: implement update
     super.update(dt);
-
+  if(bloc.state.currentPlayingState != PlayingState.playing){
+       return;
+    }
     velocity += _gravity * dt;
 
     position += velocity * dt;
@@ -69,16 +76,20 @@ class Dash extends PositionComponent with CollisionCallbacks,HasGameRef<FlappyDa
    @override
   void onCollision(Set<Vector2> points, PositionComponent other) {
     super.onCollision(points, other);
+
+    if(bloc.state.currentPlayingState != PlayingState.playing){
+      return;
+    }
     if(other is HiddenCoin){
       // add score logic and hide coin
 
       //score++ ; // add score logic here
-      game.world.increaseScore();
+      bloc.increaseScore();
       print("coin collected");
       other.removeFromParent(); 
     }else if(other is Pipe){
       print("game Over..");
-      game.world.resetScore();
+      bloc.gameOver();
       // TODO: implement game over logic
     }
   }
