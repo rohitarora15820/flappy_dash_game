@@ -9,7 +9,7 @@ class HiddenCoin extends PositionComponent{
   HiddenCoin({
     required super.position
   }):super(
-    size: Vector2.all(24.0),
+    size: Vector2.all(40.0),
     anchor: Anchor.center
   );
 
