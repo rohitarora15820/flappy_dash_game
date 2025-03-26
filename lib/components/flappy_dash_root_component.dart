@@ -18,7 +18,7 @@ class FlappyDashRootComponent extends Component
 
   @override
   Future<void> onLoad() async{
-    super.onLoad();
+   await super.onLoad();
     add(DashParallaxBackground());
     add(_dash = Dash());
     _generatePipes(fromX: 350);

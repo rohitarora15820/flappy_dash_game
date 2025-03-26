@@ -1,9 +1,7 @@
-import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:flame/palette.dart';
+
 
 class HiddenCoin extends PositionComponent{
   HiddenCoin({
@@ -16,7 +14,7 @@ class HiddenCoin extends PositionComponent{
 
 @override
   void onLoad() {
-    // TODO: implement onLoad
+  
     super.onLoad();
     add(CircleHitbox(
       // passive detect collision but doesn't affect other

@@ -11,7 +11,7 @@ class TopScore extends StatelessWidget {
       builder: (context, state) =>  Align(
                     alignment: Alignment.topCenter,
                     child: Padding(
-                      padding: const EdgeInsets.only(top: 14.0),
+                      padding: const EdgeInsets.only(top: 60.0),
                       child: Text(
                         state.currentScrore.toString(),
                         style: TextStyle(
